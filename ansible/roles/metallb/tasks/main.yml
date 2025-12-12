@@ -1,0 +1,25 @@
+---
+- name: "Create metalldb namspace"
+  kubernetes.core.k8s:
+    validate_certs: false
+    kind: Namespace
+    state: present
+    name: metallb-system
+
+- name: "Install metallb"
+  kubernetes.core.helm:
+    validate_certs: false
+    name: metallb
+    chart_ref: metallb/metallb
+    namespace: metallb-system
+    state: present
+    values:
+      speaker:
+        frr:
+          enabled: true
+
+- name: "Configure metallb"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/metallb/metallb.yaml.j2

@@ -1,0 +1,28 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: servers-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - {{ metallb_addreses }}
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: nhv
+  namespace: metallb-system
+spec:
+  myASN: 65501
+  peerASN: 65500
+  peerAddress: {{ metallb_bgp_peer_ip }}
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: nhv-advert
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - servers-pool

@@ -1,0 +1,28 @@
+[master]
+kube-master1.home.agent-est.com role=master
+kube-master2.home.agent-est.com role=backup
+
+
+[worker]
+kube-worker1.home.agent-est.com
+kube-worker2.home.agent-est.com
+kube-worker3.home.agent-est.com
+kube-worker4.home.agent-est.com
+
+[kube:children]
+master
+worker
+
+[kube:vars]
+
+ipaclient_force_join=yes
+
+ipaadmin_principal=admin
+ipaclient_servers=ipa.home.agent-est.com,ipa2.home.agent-est.com,ipa3.home.agent-est.com
+ipaadmin_password='{{ ipaAdminPass }}'
+ipaclient_mkhomedir=yes
+ipaclient_ntp_servers=ipa.home.agent-est.com,ipa2.home.agent-est.com,ipa3.home.agent-est.com
+ipaserver_domain=home.agent-est.com
+ipaserver_realm=HOME.AGENT-EST.COM
+
+

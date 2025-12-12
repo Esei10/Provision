@@ -1,0 +1,14 @@
+frontend kubernetes-api
+    mode tcp
+    bind {{ vip }}:{{ api_port_lb }}
+    default_backend kube-apiservers
+    option tcplog
+
+backend kube-apiservers
+    mode tcp
+    balance roundrobin
+    option tcp-check
+    default-server inter 3s fall 3 rise 2
+{% for n in masters %}
+    server {{ n.name }} {{ n.hostname }}:{{ api_port }} check
+{% endfor %}

@@ -1,0 +1,71 @@
+---
+- name: "Create namespace"
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: my-namespace
+    state: present
+  no_log: true
+
+- name: "Install longhorn"
+  kubernetes.core.helm:
+    name: longhorn
+    chart_ref: longhorn/longhorn
+    release_namespace: longhorn-system
+    create_namespace: true
+    validate_certs: false
+
+- name: "Apply mtls config"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/longhorn/mtls.yaml.j2
+
+- name: Wait for all Longhorn pods to be ready
+  vars:
+    max_retries: 30
+    delay_seconds: 10
+  block:
+    - name: Check Longhorn pods
+      kubernetes.core.k8s_info:
+        validate_certs: false
+        kind: Pod
+        namespace: longhorn-system
+      register: longhorn_pods
+      until: >
+        longhorn_pods.resources
+        | map(attribute='status.containerStatuses')
+        | map('map', attribute='ready')
+        | flatten
+        | select('equalto', true)
+        | list
+        | length == (longhorn_pods.resources
+                    | map(attribute='status.containerStatuses')
+                    | map('length')
+                    | sum)
+      retries: "{{ max_retries }}"
+      delay: "{{ delay_seconds }}"
+
+- name: "Remove default flag from longhorn storageClass config"
+  kubernetes.core.k8s:
+    api_version: storage.k8s.io/v1
+    kind: StorageClass
+    name: longhorn
+    merge_type: strategic-merge
+    state: present
+    definition:
+      metadata:
+        annotations:
+          storageclass.kubernetes.io/is-default-class:
+
+- name: "Apply storageClass config"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/longhorn/storageclass.yaml.j2
+
+- name: "Apply IngressRoute"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/longhorn/ingress.yaml.j2

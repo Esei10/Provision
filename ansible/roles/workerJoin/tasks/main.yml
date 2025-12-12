@@ -1,0 +1,23 @@
+---
+- name: "Check if joined"
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: is_joined
+
+- name: "Generate join command"
+  when: not is_joined.stat.exists
+  ansible.builtin.command: kubeadm token create --print-join-command
+  register: join_command
+  delegate_to: "{{ groups['master'][0] }}"
+  changed_when: true
+
+- name: "Set vars"
+  when: not is_joined.stat.exists
+  ansible.builtin.set_fact:
+    kubeadm_join: "{{ join_command.stdout }}"
+
+- name: "Run join command"
+  when: not is_joined.stat.exists
+  ansible.builtin.command: "{{ kubeadm_join }}"
+  become: true
+  changed_when: true

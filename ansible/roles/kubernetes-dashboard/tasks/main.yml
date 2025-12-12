@@ -1,0 +1,29 @@
+---
+- name: 'Create namespace'
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: kubernetes-dashboard
+    state: present
+  no_log: true
+
+- name: 'Install kubernetes-dashboard'
+  kubernetes.core.helm:
+    name: kubernetes-dashboard
+    chart_ref: kubernetes-dashboard/kubernetes-dashboard
+    release_namespace: kubernetes-dashboard
+    create_namespace: true
+    validate_certs: false
+
+- name: 'Apply RBAC config'
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    src: resources/kubernetes-dashboard/kubernetes-dashboard.yaml
+
+- name: 'Apply IngressRoute'
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    src: resources/kubernetes-dashboard/ingress-kubernetes-dashboard.yaml
+

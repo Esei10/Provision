@@ -1,0 +1,36 @@
+---
+- name: Install parted and btrfs-progs
+  ansible.builtin.package:
+    name:
+      - parted
+      - btrfs-progs
+    state: present
+
+- name: Create one GPT partition that spans the disk
+  community.general.parted:
+    device: /dev/sdb
+    label: gpt
+    number: 1
+    state: present
+    part_start: 0%
+    part_end: 100%
+
+- name: Create btrfs partition
+  community.general.filesystem:
+    fstype: btrfs
+    dev: /dev/sdb1
+
+- name: Create /var/lib/longhorn directory
+  ansible.builtin.file:
+    state: directory
+    path: /var/lib/longhorn
+    mode: "0700"
+  no_log: true
+
+- name: Mount and configure fstab
+  ansible.posix.mount:
+    fstype: btrfs
+    opts: rw,noatime,compress-force=zstd:5,ssd,discard=async,defaults
+    path: /var/lib/longhorn
+    src: /dev/sdb1
+    state: mounted

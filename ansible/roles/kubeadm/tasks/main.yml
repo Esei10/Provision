@@ -1,0 +1,49 @@
+---
+- name: "Add Kubernetes repo"
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    suites: /
+    uris: https://pkgs.k8s.io/core:/stable:/v1.34/deb/
+    signed_by: https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key
+
+- name: "Install kubectl"
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - kubectl
+      - kubeadm
+      - kubelet
+
+- name: "Start and enable kubelet"
+  ansible.builtin.service:
+    name: kubelet
+    state: started
+    enabled: true
+
+- name: "Generate containerd config"
+  block:
+    - name: "Generate containerd.io config"
+      ansible.builtin.shell: |
+        containerd config default
+      register: containerd_config
+      changed_when: true
+
+    - name: "Place containerd.io config"
+      ansible.builtin.template:
+        src: resources/template.empty
+        dest: /etc/containerd/config.toml
+        mode: "0600"
+      vars:
+        TemplateVar: "{{ containerd_config.stdout }}"
+
+- name: "Fix containerd.io config"
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    regexp: "SystemdCgroup = "
+    line: "            SystemdCgroup = true"
+
+- name: "Restart containerd.io"
+  ansible.builtin.service:
+    state: restarted
+    name: containerd

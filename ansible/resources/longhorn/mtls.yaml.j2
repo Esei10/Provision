@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: longhorn-grpc-tls
+  namespace: longhorn-system
+type: kubernetes.io/tls
+data:
+  ca.crt: {{ longhorn_mtls_ca_crt }}
+  tls.crt: {{ longhorn_mtls_tls_crt }}
+  tls.key: {{ longhorn_mtls_tls_key }}

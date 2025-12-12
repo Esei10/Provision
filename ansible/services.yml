@@ -1,0 +1,22 @@
+---
+- name: Setup metallb
+  hosts: localhost
+  roles:
+    - metallb
+- name: Setup traefik
+  hosts: localhost
+  roles:
+    - traefik
+- name: Prepare for longhorn
+  hosts: worker
+  become: true
+  roles:
+    - longhornSetup
+- name: Install longhorn
+  hosts: localhost
+  roles:
+    - longhorn
+- name: Install cert-manager
+  hosts: localhost
+  roles:
+    - cert-manager

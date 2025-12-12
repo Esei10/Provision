@@ -1,0 +1,31 @@
+---
+- name: 'Check if kubeadm is installed'
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_installed
+
+- block:
+  - name: 'Make pki directory'
+    file: 
+      path: /etc/kubernetes/pki
+      state: directory
+  - name: 'Transfer certificates to master'
+    copy:
+      src: resources/CA/ca.crt
+      dest: /etc/kubernetes/pki/ca.crt
+  - name: 'Transfer certificates private keys to master'
+    copy:
+      src: resources/CA/ca.key
+      dest: /etc/kubernetes/pki/ca.key 
+  - name: render kubeadm config
+    template:
+      src: resources/kubeadm-config.yaml.j2
+      dest: /tmp/kubeadm-config.yaml
+      mode: '0644'
+  - name: 'Run kubeadm with config'
+    shell: |
+      kubeadm config images pull
+      kubeadm init --upload-certs --config /tmp/kubeadm-config.yaml
+      rm /tmp/kubeadm-config.yaml
+    register: output
+  when: not kubeadm_installed.stat.exists

@@ -1,0 +1,44 @@
+---
+- name: "Check if cilium installed"
+  kubernetes.core.k8s_info:
+    validate_certs: false
+    kind: Pod
+    namespace: kube-system
+    label_selectors:
+      - k8s-app=cilium
+  register: cilium_pods
+
+- name: "Install cilium"
+  when: cilium_pods.resources | length == 0
+  kubernetes.core.helm:
+    validate_certs: false
+    name: cilium
+    chart_ref: cilium/cilium
+    release_namespace: kube-system
+    state: present
+    values:
+      ipam:
+        operator:
+          clusterPoolIPv4PodCIDRList:
+            - "{{ cilium_pod_cidr }}"
+      serviceCIDR: "{{ cilium_service_cidr }}"
+      kubeProxyReplacement: true
+      hubble:
+        enabled: true
+        relay:
+          enabled: true
+        metrics:
+          flow: true
+          drop: true
+        ui:
+          enabled: true
+
+- name: "Install metrics server"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    src: resources/metric-server.yaml
+
+- name: "Setup Cilium"
+  ansible.builtin.include_role:
+    name: cilium

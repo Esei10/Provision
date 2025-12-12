@@ -1,0 +1,54 @@
+---
+- name: Ansible for all our hosts
+  hosts: kube
+  vars:
+    ipaAdminPass: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      36313730643164393066326363303862303062373234623363363438636633393266303266383266
+      3938663461383765376237303663353363343763623862640a396332343138633565376463343662
+      34316263313964333035636234386666666133313837303932663762633139343762313131303336
+      6363646333303238660a333036613866623061613132346337313732306233383438333166316538
+      6131
+  roles:
+    - debian
+  remote_user: root
+
+- name: Configure ipa clients
+  hosts: kube
+  vars:
+    ipaAdminPass: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      36313730643164393066326363303862303062373234623363363438636633393266303266383266
+      3938663461383765376237303663353363343763623862640a396332343138633565376463343662
+      34316263313964333035636234386666666133313837303932663762633139343762313131303336
+      6363646333303238660a333036613866623061613132346337313732306233383438333166316538
+      6131
+  roles:
+    - ipa
+  remote_user: root
+
+- name: Configure adrian@win.home shell env
+  hosts: kube
+  roles:
+    - debianStage2
+
+- name: Install Docker and Kubeadm
+  hosts: kube
+  become: true
+  roles:
+    - docker
+    - kubeadm
+- name: Setup Kubeadm Master
+  hosts: master
+  become: true
+  roles:
+    - master
+- name: Setup Kubeadm on workers
+  become: true
+  hosts: worker
+  roles:
+    - workerJoin
+- name: Setup host and cilium
+  hosts: localhost
+  roles:
+    - local

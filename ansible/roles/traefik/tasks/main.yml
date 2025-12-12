@@ -1,0 +1,58 @@
+---
+- name: "Check if traefik exists"
+  kubernetes.core.k8s:
+    validate_certs: false
+    kind: Namespace
+    state: present
+    name: traefik
+
+- name: "Create ssl certs"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/traefik/dash-cert.yaml.j2
+
+- name: "Install traefik"
+  kubernetes.core.helm:
+    validate_certs: false
+    name: traefik
+    chart_ref: traefik/traefik
+    namespace: traefik
+    state: present
+    values:
+      additionalArguments:
+        - --serverstransport.insecureskipverify=true
+        - --entryPoints.web.http.redirections.entryPoint.to=:443
+      deployment:
+        replicas: 4
+      services:
+        enabled: true
+        type: LoadBalancer
+      ingressRoute:
+        dashboard:
+          annotations:
+            metallb.io/loadBalancerIPs: "{{ traefik_ip }}"
+            external-dns.alpha.kubernetes.io/target: "{{ traefik_ip }}"
+            kubernetes.io/ingress.class: traefik
+          enabled: true
+          matchRule: Host(`dash.{{ dns_domain }}`)
+          entryPoints:
+            - websecure
+          tls:
+            secretName: dash-cert
+      providers:
+        kubernetesGateway:
+          enabled: true
+          publishedService:
+            enabled: true
+      gateway:
+        listeners:
+          web:
+            namespacePolicy:
+              from: All
+
+- name: "Install external-dns"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/external-dns.yaml.j2

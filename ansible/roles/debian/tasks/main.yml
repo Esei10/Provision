@@ -1,0 +1,74 @@
+---
+- name: "Disable IPv6"
+  ansible.builtin.lineinfile:
+    path: /etc/gai.conf
+    line: "precedence ::ffff:0:0/96 100"
+    regexp: "^#?\\s*precedence ::ffff:0:0/96\\s*100"
+    state: present
+    backup: true
+
+- name: "Update APT package cache"
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: safe
+
+- name: Install packages
+  ansible.builtin.apt:
+    package:
+      - qemu-guest-agent
+      - git
+      - apt-transport-https
+      - ca-certificates
+      - wget
+      - python3-pip
+      - zsh
+      - htop
+      - fastfetch
+      - tree
+      - curl
+      - lvm2
+      - open-iscsi
+      - nfs-client
+      - multipath-tools
+      - cryptsetup
+    state: present
+
+- name: "Load and make persistent nfs"
+  community.general.modprobe:
+    name: nfs
+    state: present
+    persistent: present
+
+- name: "Load and make persistent dm_crypt"
+  community.general.modprobe:
+    name: dm_crypt
+    state: present
+    persistent: present
+
+- name: "Enable qemu-quest-agent"
+  ansible.builtin.service:
+    name: qemu-guest-agent
+    state: started
+    enabled: true
+
+- name: "Disable multipathd"
+  ansible.builtin.service:
+    name: multipathd
+    state: stopped
+    enabled: false
+
+- name: "Set Hostname"
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: "Set Timezone"
+  community.general.timezone:
+    name: Europe/Sofia
+
+- name: "Set ip_forward to 1"
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: true
+    state: present
+    reload: true

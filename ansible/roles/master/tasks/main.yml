@@ -1,0 +1,94 @@
+---
+- name: "Sysctl set net.ipv4.ip_nonlocal_bind"
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "1"
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: "Download packages"
+  ansible.builtin.apt:
+    package:
+      - keepalived
+      - haproxy
+    state: present
+
+- name: "Config keepalived"
+  ansible.builtin.template:
+    src: resources/keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: "0644"
+
+- name: Ensure keepalived
+  ansible.builtin.service:
+    name: keepalived
+    state: restarted
+    enabled: true
+
+- name: Append kubernetes api block
+  ansible.builtin.blockinfile:
+    path: /etc/haproxy/haproxy.cfg
+    marker: "# {mark} K8S_API"
+    block: "{{ lookup('template', 'resources/haproxy_block.j2') }}"
+
+- name: Reload haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: reloaded
+    enabled: true
+
+- name: "Init cluster"
+  when: inventory_hostname == groups['master'][0]
+  ansible.builtin.include_role:
+    name: createCluster
+
+- name: "Get .kube/config"
+  when: inventory_hostname == groups['master'][0]
+  ansible.builtin.fetch:
+    flat: true
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+
+- name: "Get cert. Key for join command"
+  when: (inventory_hostname == groups['master'][0])
+  ansible.builtin.command: kubeadm init phase upload-certs --upload-certs
+  run_once: true
+  register: master_cert_upload_output
+  changed_when: true
+
+- name: "Register cert. key"
+  when: (inventory_hostname == groups['master'][0])
+  run_once: true
+  ansible.builtin.set_fact:
+    cert_upload_key: "{{ master_cert_upload_output.stdout_lines | last }}"
+
+- name: "Join if needed"
+  when: inventory_hostname != groups['master'][0]
+  block:
+    - name: "Check if joined"
+      ansible.builtin.stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: master_is_joined
+
+    - name: "Generate join command"
+      when: not master_is_joined.stat.exists
+      ansible.builtin.command: kubeadm token create --print-join-command
+      register: master_join_command
+      delegate_to: "{{ groups['master'][0] }}"
+      changed_when: true
+
+    - name: "Set vars"
+      when: not master_is_joined.stat.exists
+      ansible.builtin.set_fact:
+        kubeadm_join: |
+          "{{ join_command.stdout }} /
+          --control-plane /
+          --certificate-key {{ hostvars[groups['master'][0]]['cert_upload_key'] }} /
+          --apiserver-bind-port {{ api_port }}"
+
+    - name: "Run join command"
+      when: not master_is_joined.stat.exists
+      ansible.builtin.command: "{{ kubeadm_join }}"
+      become: true
+      changed_when: true

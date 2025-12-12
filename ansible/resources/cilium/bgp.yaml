@@ -1,0 +1,43 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: cilium-peer-default
+spec:
+  timers:
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: "bgp"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: cilium-bgp-cluster
+spec:
+  nodeSelector:
+    matchLabels:
+      bgp: "true"
+  bgpInstances:
+    - name: cluster-bgp
+      localASN: 65501
+      peers:
+        - name: peer-to-router
+          peerASN: 65500
+          peerAddress: 192.168.105.1
+          peerConfigRef:
+            name: cilium-peer-default
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: advertise-podcidr
+  labels:
+    advertise: "bgp"
+spec:
+  advertisements:
+    - advertisementType: PodCIDR

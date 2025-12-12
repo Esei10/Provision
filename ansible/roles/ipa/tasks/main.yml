@@ -1,0 +1,9 @@
+---
+- name: "Check if FreeIpa is installed"
+  ansible.builtin.stat:
+    path: /etc/ipa/default.conf
+  register: ipa_installed
+- name: "Install FreeIpa"
+  when: not ipa_installed.stat.exists
+  ansible.builtin.include_role:
+    name: freeipa.ansible_freeipa.ipaclient

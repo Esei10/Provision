@@ -1,0 +1,16 @@
+---
+- name: 'Set native routing'
+  shell: |
+    cilium config set routing-mode native
+
+- name: 'Set native routing cidr' 
+  shell: |
+    "cilium config set ipv4-native-routing-cidr {{ cilium_native_cidr }}"
+    
+- name: 'Set auto-direct-nodes'
+  shell: |
+    cilium config set auto-direct-node-routes true
+
+- name: 'Set direct-routing-skip-unreachable'
+  shell: |
+    cilium config set direct-routing-skip-unreachable true

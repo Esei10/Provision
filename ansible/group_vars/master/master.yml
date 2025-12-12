@@ -1,0 +1,17 @@
+# Haproxy and keepalived
+auth_pass: "{{ vault_auth_pass }}"
+vip: "{{ vault_vip }}"
+vrid: "{{ vault_vrid }}"
+interface: eth0
+master_priority: 100
+backup_priority: 90
+
+api_port: 6443 # In masters, not on lb ip
+api_port_lb: 7443
+masters: "{{ vault_masters }}"
+
+# Kubeadm config
+kubeadm_controlPlaneEndpoint_hostname: "{{ vault_kubeadm_controlPlaneEndpoint_hostname }}"
+kubeadm_clusterName: "{{ vault_kubeadm_clusterName }}"
+kubeadm_podSubnet: "{{ vault_kubeadm_podSubnet }}"
+kubeadm_serviceSubnet: "{{ vault_kubeadm_serviceSubnet }}"
