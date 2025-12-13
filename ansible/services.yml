@@ -3,6 +3,10 @@
   hosts: localhost
   roles:
     - metallb
+- name: Install cert-manager
+  hosts: localhost
+  roles:
+    - cert-manager
 - name: Setup traefik
   hosts: localhost
   roles:
@@ -16,7 +20,4 @@
   hosts: localhost
   roles:
     - longhorn
-- name: Install cert-manager
-  hosts: localhost
-  roles:
-    - cert-manager
+

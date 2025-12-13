@@ -4,8 +4,7 @@
     cilium config set routing-mode native
 
 - name: 'Set native routing cidr' 
-  shell: |
-    "cilium config set ipv4-native-routing-cidr {{ cilium_native_cidr }}"
+  shell: "cilium config set ipv4-native-routing-cidr {{ cilium_native_cidr }}"
     
 - name: 'Set auto-direct-nodes'
   shell: |

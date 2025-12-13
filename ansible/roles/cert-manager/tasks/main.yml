@@ -39,7 +39,7 @@
         namespace: cert-manager
       type: Opaque
       data:
-        tsig-secret-key: "{{ cert-manager_tsig_key }}"
+        tsig-secret-key: "{{ certManager_tsig_key }}"
 
 - name: Install cert-manager
   kubernetes.core.helm:

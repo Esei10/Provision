@@ -113,11 +113,11 @@ spec:
         - --txt-prefix=external-dns.
         - --txt-owner-id=k8s
         - --provider=rfc2136
-        - --rfc2136-host={{ external-dns_nameserver_ip }}
+        - --rfc2136-host={{ externalDns_nameserver_ip }}
         - --rfc2136-port=53
-        - --rfc2136-zone={{ external-dns_dns_zone }}
-        - --rfc2136-tsig-secret={{ external-dns_tsig_key }}
-        - --rfc2136-tsig-secret-alg={{ external-dns_tsig_key_algo }}
-        - --rfc2136-tsig-keyname={{ external-dns_tsig_key_name }}
+        - --rfc2136-zone={{ externalDns_dns_zone }}
+        - --rfc2136-tsig-secret={{ externalDns_tsig_key }}
+        - --rfc2136-tsig-secret-alg={{ externalDns_tsig_key_algo }}
+        - --rfc2136-tsig-keyname={{ externalDns_tsig_key_name }}
         - --source=traefik-proxy
         - --domain-filter="{{ dns_domain }}"

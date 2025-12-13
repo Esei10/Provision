@@ -15,16 +15,16 @@ metallb_addreses: "{{ vault_metallb_addreses }}"
 traefik_ip: "{{ vault_traefik_ip }}"
 
 # Cert-manager
-cert-manager_tsig_key: "{{ vault_cert-manager_tsig_key }}"
-cert-manager_acme_server: "{{ vault_cert-manager_acme_server }}"
-cert-manager_nameserver_ip: "{{ vault_cert-manager_nameserver_ip }}"
+certManager_tsig_key: "{{ vault_certManager_tsig_key }}"
+certManager_acme_server: "{{ vault_certManager_acme_server }}"
+certManager_nameserver_ip: "{{ vault_certManager_nameserver_ip }}"
 
 # External-dns
-external-dns_nameserver_ip: "{{ vault_external-dns_nameserver_ip }}"
-external-dns_tsig_key: "{{ vault_external-dns_tsig_key }}"
-external-dns_dns_zone: "{{ vault_external-dns_dns_zone }}"
-external-dns_tsig_key_name: "{{ vault_external-dns_tsig_key_name }}"
-external-dns_tsig_key_algo: "{{ vault_external-dns_tsig_key_algo }}"
+externalDns_nameserver_ip: "{{ vault_externalDns_nameserver_ip }}"
+externalDns_tsig_key: "{{ vault_externalDns_tsig_key }}"
+externalDns_dns_zone: "{{ vault_externalDns_dns_zone }}"
+externalDns_tsig_key_name: "{{ vault_externalDns_tsig_key_name }}"
+externalDns_tsig_key_algo: "{{ vault_externalDns_tsig_key_algo }}"
 
 # Cilium
 cilium_pod_cidr: "{{ vault_cilium_pod_cidr }}"
