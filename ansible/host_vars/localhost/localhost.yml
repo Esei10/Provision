@@ -30,3 +30,5 @@ externalDns_tsig_key_algo: "{{ vault_externalDns_tsig_key_algo }}"
 cilium_pod_cidr: "{{ vault_cilium_pod_cidr }}"
 cilium_service_cidr: "{{ vault_cilium_service_cidr }}"
 cilium_native_cidr: "{{ vault_cilium_native_cidr }}"
+kubeadm_controlPlaneEndpoint_hostname: "{{ vault_kubeadm_controlPlaneEndpoint_hostname }}" # change in master group_vars too
+kubeadm_api_port_lb: 7443 # change in master group_vars too

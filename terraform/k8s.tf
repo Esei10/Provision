@@ -91,13 +91,13 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.200/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.200/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 
@@ -161,13 +161,13 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER2" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.201/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.201/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 
@@ -238,13 +238,13 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER1" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.202/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.202/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 
@@ -315,13 +315,13 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER2" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.203/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.203/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 
@@ -392,13 +392,13 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.204/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.204/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 
@@ -469,13 +469,13 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER4" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = "home.agent-est.com"
-      servers = ["192.168.110.22"]
+      domain  = var.root_doamin
+      servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
-        address = "192.168.105.205/24"
-        gateway = "192.168.105.1"
+        address = "${var.kube_ip_prefix}.205/24"
+        gateway = "${var.kube_ip_prefix}.1"
       }
     }
 

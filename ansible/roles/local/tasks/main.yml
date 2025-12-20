@@ -17,12 +17,33 @@
     release_namespace: kube-system
     state: present
     values:
+      tunnelProtocol: 
+      routingMode: native
+      bpfClockProbe: true
+      wellKnownIdentities:
+        enabled: true
+      rollOutCiliumPods: true
       ipam:
         operator:
           clusterPoolIPv4PodCIDRList:
             - "{{ cilium_pod_cidr }}"
+      loadBalancer:
+        acceleration: best-effort
+        mode: hybrid
+      bpf:
+        datapathMode: netkit
+        masquerade: true
+        distributedLRU:
+          enabled: true
+        mapDynamicSizeRatio: 0.08
+      bandwidthManager:
+        enabled: true
+        bbr: true
+      installNoConntrackIptablesRules: true
       serviceCIDR: "{{ cilium_service_cidr }}"
       kubeProxyReplacement: true
+      k8sServiceHost: "{{ kubeadm_controlPlaneEndpoint_hostname }}"
+      k8sServicePort: "{{ kubeadm_api_port_lb }}"
       hubble:
         enabled: true
         relay:

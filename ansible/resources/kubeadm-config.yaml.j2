@@ -1,5 +1,7 @@
 kind: InitConfiguration
 apiVersion: kubeadm.k8s.io/v1beta4
+skipPhases:
+  - addon/kube-proxy
 nodeRegistration:
   criSocket: unix:///var/run/containerd/containerd.sock
 localAPIEndpoint:

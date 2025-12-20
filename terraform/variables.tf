@@ -1,6 +1,6 @@
 # PROXMOX SETUP VARS # 
 variable "proxmox_url" {
-  default = "https://nhv.home.agent-est.com:8006/"
+  sensitive = true
 }
 variable "proxmox_api_token" {
   # In password manager
@@ -18,6 +18,9 @@ variable "ipa_password" {
   # In password manager
   sensitive = true
 }
+variable "root_doamin" {
+  sensitive = true
+}
 
 # PROXMOX WORK VARS #
 variable "virtual_environment_node_name" {
@@ -29,3 +32,10 @@ variable "debian_template_id" {
 variable "ram_per_node" {
   default = "4096" # 4 GB
 }
+variable "kube_ip_prefix" {
+  sensitive = true
+}
+variable "dns_server" {
+  sensitive = true
+}
+
