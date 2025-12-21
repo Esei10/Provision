@@ -11,13 +11,17 @@
   hosts: localhost
   roles:
     - traefik
-- name: Prepare for longhorn
-  hosts: worker
-  become: true
-  roles:
-    - longhornSetup
-- name: Install longhorn
+# - name: Prepare for longhorn
+#   hosts: worker
+#   become: true
+#   roles:
+#     - longhornSetup
+# - name: Install longhorn
+#   hosts: localhost
+#   roles:
+#     - longhorn
+# 
+- name: Setup rook
   hosts: localhost
   roles:
-    - longhorn
-
+    - rook

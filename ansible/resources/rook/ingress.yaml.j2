@@ -1,0 +1,38 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dash-cert
+  namespace: rook-ceph
+spec:
+  commonName: 'rook.{{ dns_domain }}'
+  dnsNames:
+    - rook.{{ dns_domain }}
+  issuerRef:
+    name: ipa
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  secretName: dash-cert
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: rook-ceph 
+  name: rook-gui
+  annotations:
+    external-dns.alpha.kubernetes.io/target: dash.{{ dns_domain }}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`rook.{{ dns_domain }}`)
+      kind: Rule
+      services:
+        - name: rook-ceph-mgr-dashboard
+          port: 8443
+  tls:
+    secretName: dash-cert

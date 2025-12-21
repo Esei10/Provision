@@ -1,5 +1,0 @@
----
-- name: Setup host and cilium
-  hosts: localhost
-  roles:
-    - local

@@ -1,0 +1,29 @@
+---
+- name: Install rook operator
+  kubernetes.core.helm:
+    validate_certs: false
+    name: rook-ceph
+    chart_ref: rook-release/rook-ceph
+    namespace: rook-ceph
+    create_namespace: true
+    values_files: "resources/rook/rook-operator-values.yaml"
+
+- name: Apply rook encryption keys
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/rook/encryption.yaml.j2 
+
+- name: Install rook cluster
+  kubernetes.core.helm:
+    validate_certs: false
+    name: rook-ceph-cluster 
+    chart_ref: rook-release/rook-ceph-cluster 
+    namespace: rook-ceph
+    values_files: "resources/rook/rook-cluster-values.yaml"
+
+- name: Apply IngressRoute
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/rook/ingress.yaml.j2

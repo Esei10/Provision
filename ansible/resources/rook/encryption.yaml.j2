@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rook-ceph-csi-kms-config
+  namespace: rook-ceph
+data:
+  config.json: |
+    {
+      "encryptionKMSType": "local",
+      "local": {
+        "key": "{{ rook_kms_key }}"
+      }
+    }

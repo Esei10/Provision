@@ -43,8 +43,7 @@
       providers:
         kubernetesGateway:
           enabled: true
-          publishedService:
-            enabled: true
+          
       gateway:
         listeners:
           web:

@@ -47,8 +47,8 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER" {
   }
 
   memory {
-    dedicated = var.ram_per_node
-    floating  = var.ram_per_node
+    dedicated = var.ram_per_master_node
+    floating  = var.ram_per_master_node
   }
 
   disk {
@@ -68,7 +68,8 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER" {
   }
 
   cpu {
-    cores = 4
+    cores = 8
+    type  = "x86-64-v2-AES"
   }
 
   machine = "q35"
@@ -91,7 +92,7 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = var.root_doamin
+      domain  = var.root_domain
       servers = [var.dns_server]
     }
     ip_config {
@@ -117,8 +118,8 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER2" {
   }
 
   memory {
-    dedicated = var.ram_per_node
-    floating  = var.ram_per_node
+    dedicated = var.ram_per_master_node
+    floating  = var.ram_per_master_node
   }
 
   disk {
@@ -138,7 +139,8 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER2" {
   }
 
   cpu {
-    cores = 4
+    cores = 8
+    type  = "x86-64-v2-AES"
   }
 
   machine = "q35"
@@ -161,7 +163,7 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER2" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = var.root_doamin
+      domain  = var.root_domain
       servers = [var.dns_server]
     }
     ip_config {
@@ -176,11 +178,82 @@ resource "proxmox_virtual_environment_vm" "kube-MASTER2" {
   }
 }
 
+resource "proxmox_virtual_environment_vm" "kube-MASTER3" {
+  name        = "kube-MASTER3"
+  description = "Managed by Terraform"
+  node_name   = var.virtual_environment_node_name
+  vm_id       = "202"
+
+  agent {
+    enabled = true
+  }
+
+  memory {
+    dedicated = var.ram_per_master_node
+    floating  = var.ram_per_master_node
+  }
+
+  disk {
+    datastore_id = "local"
+    file_id      = proxmox_virtual_environment_download_file.debian13_cloudinit.id
+    interface    = "scsi0"
+    size         = "30"
+  }
+
+  efi_disk {
+    datastore_id = "local"
+    type         = "4m"
+  }
+
+  tpm_state {
+    datastore_id = "local"
+  }
+
+  cpu {
+    cores = 8
+    type  = "x86-64-v2-AES"
+  }
+
+  machine = "q35"
+  bios    = "ovmf"
+
+  network_device {
+    bridge = "cluster"
+  }
+
+  operating_system {
+    type = "l26"
+  }
+
+  serial_device {
+    device = "socket"
+  }
+
+
+
+  initialization {
+    datastore_id = "local"
+    dns {
+      domain  = var.root_domain
+      servers = [var.dns_server]
+    }
+    ip_config {
+      ipv4 {
+        address = "${var.kube_ip_prefix}.202/24"
+        gateway = "${var.kube_ip_prefix}.1"
+      }
+    }
+
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
+
+  }
+}
+
 resource "proxmox_virtual_environment_vm" "kube-WORKER1" {
   name        = "kube-WORKER1"
   description = "Managed by Terraform"
   node_name   = var.virtual_environment_node_name
-  vm_id       = "202"
+  vm_id       = "203"
 
   agent {
     enabled = true
@@ -215,7 +288,8 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER1" {
   }
 
   cpu {
-    cores = 4
+    cores = 8
+    type  = "x86-64-v2-AES"
   }
 
   machine = "q35"
@@ -238,84 +312,7 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER1" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = var.root_doamin
-      servers = [var.dns_server]
-    }
-    ip_config {
-      ipv4 {
-        address = "${var.kube_ip_prefix}.202/24"
-        gateway = "${var.kube_ip_prefix}.1"
-      }
-    }
-
-    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
-
-  }
-}
-
-resource "proxmox_virtual_environment_vm" "kube-WORKER2" {
-  name        = "kube-WORKER2"
-  description = "Managed by Terraform"
-  node_name   = var.virtual_environment_node_name
-  vm_id       = "203"
-
-  agent {
-    enabled = true
-  }
-
-  memory {
-    dedicated = var.ram_per_node
-    floating  = var.ram_per_node
-  }
-
-  disk {
-    datastore_id = "local" 
-    file_id      = proxmox_virtual_environment_download_file.debian13_cloudinit.id
-    interface    = "scsi0"
-    size         = "30"
-  }
-
-  disk {
-    datastore_id = "local"
-    interface    = "scsi1"
-    size         = "40"
-    file_format  = "qcow2"
-  }
-
-  efi_disk {
-    datastore_id = "local"
-    type         = "4m"
-  }
-
-  tpm_state {
-    datastore_id = "local"
-  }
-
-  cpu {
-    cores = 4
-  }
-
-  machine = "q35"
-  bios    = "ovmf"
-
-  network_device {
-    bridge = "cluster"
-  }
-
-  operating_system {
-    type = "l26"
-  }
-
-  serial_device {
-    device = "socket"
-  }
-
-
-
-  initialization {
-    datastore_id = "local"
-    dns {
-      domain  = var.root_doamin
+      domain  = var.root_domain
       servers = [var.dns_server]
     }
     ip_config {
@@ -330,8 +327,8 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER2" {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
-  name        = "kube-WORKER3"
+resource "proxmox_virtual_environment_vm" "kube-WORKER2" {
+  name        = "kube-WORKER2"
   description = "Managed by Terraform"
   node_name   = var.virtual_environment_node_name
   vm_id       = "204"
@@ -369,7 +366,8 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
   }
 
   cpu {
-    cores = 4
+    cores = 8
+    type  = "x86-64-v2-AES"
   }
 
   machine = "q35"
@@ -392,7 +390,7 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = var.root_doamin
+      domain  = var.root_domain
       servers = [var.dns_server]
     }
     ip_config {
@@ -407,8 +405,8 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "kube-WORKER4" {
-  name        = "kube-WORKER4"
+resource "proxmox_virtual_environment_vm" "kube-WORKER3" {
+  name        = "kube-WORKER3"
   description = "Managed by Terraform"
   node_name   = var.virtual_environment_node_name
   vm_id       = "205"
@@ -446,7 +444,8 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER4" {
   }
 
   cpu {
-    cores = 4
+    cores = 8
+    type  = "x86-64-v2-AES"
   }
 
   machine = "q35"
@@ -469,12 +468,90 @@ resource "proxmox_virtual_environment_vm" "kube-WORKER4" {
   initialization {
     datastore_id = "local"
     dns {
-      domain  = var.root_doamin
+      domain  = var.root_domain
       servers = [var.dns_server]
     }
     ip_config {
       ipv4 {
         address = "${var.kube_ip_prefix}.205/24"
+        gateway = "${var.kube_ip_prefix}.1"
+      }
+    }
+
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
+
+  }
+}
+
+resource "proxmox_virtual_environment_vm" "kube-WORKER4" {
+  name        = "kube-WORKER4"
+  description = "Managed by Terraform"
+  node_name   = var.virtual_environment_node_name
+  vm_id       = "206"
+
+  agent {
+    enabled = true
+  }
+
+  memory {
+    dedicated = var.ram_per_node
+    floating  = var.ram_per_node
+  }
+
+  disk {
+    datastore_id = "local" 
+    file_id      = proxmox_virtual_environment_download_file.debian13_cloudinit.id
+    interface    = "scsi0"
+    size         = "30"
+  }
+
+  disk {
+    datastore_id = "local"
+    interface    = "scsi1"
+    size         = "40"
+    file_format  = "qcow2"
+  }
+
+  efi_disk {
+    datastore_id = "local"
+    type         = "4m"
+  }
+
+  tpm_state {
+    datastore_id = "local"
+  }
+
+  cpu {
+    cores = 8
+    type  = "x86-64-v2-AES"
+  }
+
+  machine = "q35"
+  bios    = "ovmf"
+
+  network_device {
+    bridge = "cluster"
+  }
+
+  operating_system {
+    type = "l26"
+  }
+
+  serial_device {
+    device = "socket"
+  }
+
+
+
+  initialization {
+    datastore_id = "local"
+    dns {
+      domain  = var.root_domain
+      servers = [var.dns_server]
+    }
+    ip_config {
+      ipv4 {
+        address = "${var.kube_ip_prefix}.206/24"
         gateway = "${var.kube_ip_prefix}.1"
       }
     }

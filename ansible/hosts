@@ -1,6 +1,7 @@
 [master]
 kube-master1.home.agent-est.com role=master
 kube-master2.home.agent-est.com role=backup
+kube-master3.home.agent-est.com role=backup
 
 
 [worker]

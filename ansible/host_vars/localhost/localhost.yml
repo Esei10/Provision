@@ -7,6 +7,9 @@ longhorn_mtls_tls_crt: "{{ vault_longhorn_mtls_tsl_crt }}"
 longhorn_mtls_tls_key: "{{ vault_longhorn_mtls_tls_key }}"
 longhorn_crypto_key_value: "{{ vault_longhorn_crypto_key_value }}"
 
+# Rook
+rook_kms_key: "{{ vault_rook_kms_key }}"
+
 # metallb
 metallb_bgp_peer_ip: "{{ vault_metallb_bgp_peer_ip }}"
 metallb_addreses: "{{ vault_metallb_addreses }}"

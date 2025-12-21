@@ -1,0 +1,25 @@
+---
+- name: Reboot hosts safely
+  hosts: kube
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Reboot the host
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+        test_command: whoami
+- name: Show fdisk output on all hosts
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Run fdisk -l
+      ansible.builtin.command: fdisk -l
+      register: fdisk_output
+      ignore_errors: yes
+
+    - name: Print fdisk output
+      ansible.builtin.debug:
+        var: fdisk_output.stdout

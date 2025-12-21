@@ -17,7 +17,7 @@
     release_namespace: kube-system
     state: present
     values:
-      tunnelProtocol: 
+      tunnelProtocol: ""
       routingMode: native
       bpfClockProbe: true
       wellKnownIdentities:
