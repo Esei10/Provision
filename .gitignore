@@ -44,3 +44,5 @@ erraform.rc
 # Ignore ansible local dirs
 .ansible/ 
 ansible/.vscode/settings.json
+# Ignore intellij ide configs
+.idea/

@@ -25,3 +25,7 @@
   hosts: localhost
   roles:
     - rook
+- name: Setup gitea
+  hosts: localhost
+  roles:
+    - gitea

@@ -1,0 +1,17 @@
+---
+- name: "Install gitea"
+  kubernetes.core.helm:
+    validate_certs: false
+    name: gitea 
+    chart_ref: oci://docker.gitea.com/charts/gitea
+    release_namespace: gitea
+    create_namespace: true
+    state: present
+    values_files:
+      - resources/gitea/config.yaml
+      
+- name: "Apply IngressRoute"
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/gitea/ingress.yaml.j2

@@ -79,7 +79,7 @@ csi:
   # -- Enable host networking for CSI CephFS and RBD nodeplugins. This may be necessary
   # in some network configurations where the SDN does not provide access to an external cluster or
   # there is significant drop in read/write performance
-  enableCSIHostNetwork: false
+  enableCSIHostNetwork: true
   # -- Enable Snapshotter in CephFS provisioner pod
   enableCephfsSnapshotter: true
   # -- Enable Snapshotter in NFS provisioner pod
@@ -121,7 +121,7 @@ csi:
 
   # -- Set CephFS Kernel mount options to use https://docs.ceph.com/en/latest/man/8/mount.ceph/#options.
   # Set to "ms_mode=secure" when connections.encrypted is enabled in CephCluster CR
-  cephFSKernelMountOptions: prefer-secure
+  cephFSKernelMountOptions: ms_mode=secure
 
   # -- Enable adding volume metadata on the CephFS subvolumes and RBD images.
   # Not all users might be interested in getting volume/snapshot details as metadata on CephFS subvolume and RBD images.

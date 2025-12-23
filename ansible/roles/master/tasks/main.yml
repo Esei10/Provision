@@ -1,4 +1,16 @@
 ---
+- name: "Set sshd to listen only on primary ip"
+  ansible.builtin.template:
+    src: resources/sshd.conf.j2
+    dest: /etc/ssh/sshd_config.d/05-listenAddress.conf
+    mode: "0644"
+
+- name: "Restart sshd"
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+    enabled: true
+
 - name: "Sysctl set net.ipv4.ip_nonlocal_bind"
   ansible.posix.sysctl:
     name: net.ipv4.ip_nonlocal_bind

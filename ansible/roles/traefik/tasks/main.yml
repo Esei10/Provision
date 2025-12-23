@@ -21,6 +21,7 @@
     state: present
     values:
       additionalArguments:
+        - --entrypoints.gitea-ssh.address=:22/tcp
         - --serverstransport.insecureskipverify=true
         - --entryPoints.web.http.redirections.entryPoint.to=:443
       deployment:
@@ -43,7 +44,6 @@
       providers:
         kubernetesGateway:
           enabled: true
-          
       gateway:
         listeners:
           web:
