@@ -29,3 +29,7 @@
   hosts: localhost
   roles:
     - gitea
+- name: Setup pihole
+  hosts: localhost
+  roles:
+    - pihole

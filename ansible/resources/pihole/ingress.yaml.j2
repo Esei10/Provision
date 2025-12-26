@@ -1,0 +1,38 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dash-cert
+  namespace: pihole
+spec:
+  commonName: 'pihole.{{ dns_domain }}'
+  dnsNames:
+    - pihole.{{ dns_domain }}
+  issuerRef:
+    name: ipa
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  secretName: dash-cert
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: pihole 
+  name: pihole-gui
+  annotations:
+    external-dns.alpha.kubernetes.io/target: dash.{{ dns_domain }}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pihole.{{ dns_domain }}`)
+      kind: Rule
+      services:
+        - name: pihole-web
+          port: 80
+  tls:
+    secretName: dash-cert

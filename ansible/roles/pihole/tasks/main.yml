@@ -1,0 +1,19 @@
+---
+- name: Install unbound cluster
+  kubernetes.core.helm:
+    validate_certs: false
+    name: unbound
+    chart_ref: gitea.kube.home.agent-est.com/unbound
+    namespace: pihole
+    create_namespace: true
+- name: Install pihole cluster
+  kubernetes.core.helm:
+    validate_certs: false
+    name: pihole 
+    chart_ref: gitea.kube.home.agent-est.com/pihole 
+    namespace: pihole
+- name: Apply IngressRoute
+  kubernetes.core.k8s:
+    validate_certs: false
+    state: present
+    template: resources/pihole/ingress.yaml.j2

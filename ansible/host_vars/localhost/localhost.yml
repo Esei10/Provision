@@ -13,6 +13,7 @@ rook_kms_key: "{{ vault_rook_kms_key }}"
 # metallb
 metallb_bgp_peer_ip: "{{ vault_metallb_bgp_peer_ip }}"
 metallb_addreses: "{{ vault_metallb_addreses }}"
+metallb_dns_address: "{{ vault_metallb_dns_address }}" 
 
 # Traefik 
 traefik_ip: "{{ vault_traefik_ip }}"

@@ -8,6 +8,15 @@ spec:
   addresses:
   - {{ metallb_addreses }}
 ---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: dns-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - {{ metallb_dns_address }}
+---
 apiVersion: metallb.io/v1beta2
 kind: BGPPeer
 metadata:
@@ -26,3 +35,4 @@ metadata:
 spec:
   ipAddressPools:
   - servers-pool
+  - dns-pool
